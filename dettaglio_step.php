@@ -3,13 +3,12 @@
 include "../../lib/start.php";
 
 check_session();
-check_permission(ADM_PERM);
+check_permission(ADM_PERM|SEG_PERM|DIR_PERM|DSG_PERM);
 
-$sel_uffici = "SELECT * FROM w_uffici";
-$res_uffici = $db->executeQuery($sel_uffici);
-
-if(isset($_REQUEST['id'])){
-	$sel = "SELECT id_step, descrizione, ufficio, nome FROM w_uffici, w_step WHERE ufficio = id_ufficio AND id_step = ".$_REQUEST['id'];
+if(isset($_REQUEST['id']) && $_REQUEST['id'] != 0){
+	$sel = "SELECT id_step, descrizione
+			FROM rb_w_step 
+			WHERE id_step = ".$_REQUEST['id'];
 	try{
 		$res = $db->executeQuery($sel);
 	} catch (MySQLException $ex){
@@ -18,9 +17,13 @@ if(isset($_REQUEST['id'])){
 	}
 	$step = $res->fetch_assoc();
 	$_i = $_REQUEST['id'];
+	$action = 3;
 }
 else{
 	$_i = 0;
+	$action = 1;
 }
+
+$drawer_label = "Step workflow";
 
 include "dettaglio_step.html.php";

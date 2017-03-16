@@ -1,41 +1,58 @@
 <?php
 
 include "../../lib/start.php";
+require_once "lib/Workflow.php";
 
-check_session(AJAX_CALL);
-check_permission(ADM_PERM);
+check_session();
+check_permission(ADM_PERM|SEG_PERM|DIR_PERM|DSG_PERM);
 
-header("Content-type: text/plain");
+header("Content-type: application/json");
+$response = array("status" => "ok", "message" => "Operazione completata");
 
 $nome = trim($_POST['nome_flusso']);
 $num_step = $_POST['num_step'];
-$codice_step = $_POST['codice_step'];
-$gruppi = 0;
-foreach($_POST['gruppi'] as $a)
-$gruppi += $a;
-switch($_POST['action']){
-	case 1:     // inserimento
-		$statement = "INSERT INTO w_workflow (richiesta, num_step, codice_step, gruppi) VALUES ('".$nome."', $num_step, '$codice_step', $gruppi)";
-		$msg = "La richiesta &egrave; stata registrata correttamente";
-		break;
-	case 2:     // cancellazione
-		$statement = "DELETE FROM w_workflow WHERE id_workflow = ".$_POST['_i'];
-		//print $statement;
-		$msg = "La richiesta &egrave; stata cancellata correttamente";
-		break;
-	case 3:     // modifica
-		$statement = "UPDATE w_workflow SET richiesta = '$nome', num_step = $num_step, codice_step = '$codice_step', gruppi = $gruppi WHERE id_workflow = ".$_POST['_i'];
-		//print $statement;
-		$msg = "Lo step &egrave; stato aggiornato correttamente";
-		break;
+
+$steps = [];
+for ($i = 0; $i < $num_step; $i++) {
+	$steps[] = "";
 }
 
-try{
-	$recordset = $db->executeUpdate($statement);
+$gruppi = 0;
+foreach($_POST['gruppi'] as $a) {
+	$gruppi += $a;
+}
+
+if ($_POST['action'] == 2) {
+	$nome = "";
+	$_POST['gruppi'] = [];
+}
+$wflow = new \eschool\Workflow($_POST['_i'], $nome, $steps, $_POST['gruppi'], new MySQLDataLoader($db));
+
+try {
+	switch ($_POST['action']) {
+		case 1:     // inserimento
+			$wflow->insert();
+			$msg = "Richiesta registrata";
+			break;
+		case 2:     // cancellazione
+			$wflow->delete();
+			//print $statement;
+			$msg = "Richiesta cancellata";
+			break;
+		case 3:     // modifica
+			$wflow->update();
+			$msg = "Richiesta aggiornata";
+			break;
+	}
 } catch (MySQLException $ex){
-	print "ko|".$ex->getMessage()."|".$ex->getQuery();
+	$response['status'] = "kosql";
+	$response['message'] = "Operazione non completata a causa di un errore";
+	$response['dbg_message'] = $ex->getMessage();
+	$response['query'] = $ex->getQuery();
+	echo json_encode($response);
 	exit;
 }
 
-print "ok";
+$response['message'] = $msg;
+echo json_encode($response);
 exit;

@@ -3,11 +3,13 @@
 include "../../lib/start.php";
 
 check_session();
-check_permission(ADM_PERM);
+check_permission(ADM_PERM|SEG_PERM|DIR_PERM|DSG_PERM);
 
-//$log = fopen("/tmp/mysql.log", "w+");
-
-$sel_step = "SELECT id_step, descrizione, ufficio, nome FROM w_step, w_uffici WHERE ufficio = id_ufficio ORDER BY id_step";
+$sel_step = "SELECT id_step, descrizione 
+			FROM rb_w_step 
+			ORDER BY id_step";
 $res_step = $db->execute($sel_step);
+
+$drawer_label = "Gestione step";
 
 include "step.html.php";

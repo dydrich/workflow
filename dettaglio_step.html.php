@@ -1,90 +1,119 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
-<title>Dettaglio news</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<link href="../../css/main.css" rel="stylesheet" />
-<script type="text/javascript" src="../../js/prototype.js"></script>
-<script type="text/javascript" src="../../js/scriptaculous.js"></script>
-<script type="text/javascript" src="../../js/page.js"></script>
-<script type="text/javaScript">
-function go(par, id){
-    if(par == 2){
-        if(!confirm("Sei sicuro di voler cancellare questo step?"))
-            return false;
-    }
-    $('_i').value = id;
-    $('action').value = par;
-    var url = "<?php print $_SESSION['__config__']['root_site'] ?>admin/adm_workflow/step_manager.php";
-    //alert(url);
-	var req = new Ajax.Request(url,
-			  {
-			    	method:'post',
-			    	parameters: $('wf_form').serialize(true),
-			    	onSuccess: function(transport){
-			      		var response = transport.responseText || "no response text";
-			      		//alert(response);
-			      		var dati = response.split("|");
-			      		if(dati[0] == "ko"){
-							alert("Errore SQL. \nQuery: "+dati[1]+"\nErrore: "+dati[2]);
-							return;
-			      		}
-			      		parent.win.close();
-			      		link = "step.php?msg="+par;
-			      		parent.document.location.href = link;
-			      		//parent.win.close();
-			    	},
-			    	onFailure: function(){ alert("Si e' verificato un errore..."); }
-			  });
-}
-</script>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title><?php print $_SESSION['__config__']['intestazione_scuola'] ?>:: gestione workflow</title>
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,400italic,600,600italic,700,700italic,900,200' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../../font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../css/site_themes/<?php echo getTheme() ?>/reg.css" type="text/css" media="screen,projection" />
+    <link rel="stylesheet" href="../../css/general.css" type="text/css" media="screen,projection" />
+    <link rel="stylesheet" href="../../css/site_themes/<?php echo getTheme() ?>/jquery-ui.min.css" type="text/css" media="screen,projection" />
+    <script type="text/javascript" src="../../js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="../../js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script type="text/javascript" src="../../js/page.js"></script>
+    <script>
+        $(function() {
+            load_jalert();
+            setOverlayEvent();
+
+            $('#reg').on('click', function (event) {
+                event.preventDefault();
+                save_data();
+            });
+
+            $('#nome_step').focus();
+        });
+
+        var save_data = function(){
+            var url = "step_manager.php";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {nome_step: $('#nome_step').val(), action: <?php echo $action ?>, ufficio: $('#ufficio').val(), _i: <?php echo $_i ?>},
+                dataType: 'json',
+                error: function() {
+                    j_alert("error", "Errore di trasmissione dei dati");
+                },
+                succes: function() {
+
+                },
+                complete: function(data){
+                    r = data.responseText;
+                    if(r == "null"){
+                        return false;
+                    }
+                    var json = $.parseJSON(r);
+                    if (json.status == "kosql"){
+                        sqlalert();
+                        console.log(json.dbg_message);
+                    }
+                    else if(json.status == "ko") {
+                        j_alert("error", "Impossibile completare l'operazione richiesta. Riprovare tra qualche secondo o segnalare l'errore al webmaster");
+                        return;
+                    }
+                    else {
+                        j_alert("alert", json.message);
+                        window.setTimeout(function () {
+                            document.location.href = "step.php";
+                        }, 2500);
+                    }
+                }
+            });
+        }
+    </script>
 </head>
-<body onload="document.forms[0].nome_step.focus()">
-    <p class="popup_header">Gestione step workflow</p>
-    <form action="dettaglio_step.php?upd=1" method="post" id="wf_form">
-    <div style="margin-right: auto; margin-left: auto; margin-top: 00px; width: 450px">
-    	<fieldset style="width: 450px; border: 1px solid; padding-top: 10px; ">
-	    <legend style="font-weight: bold;">Step workflow</legend>
-	    <table style="width: 430px; margin-right: auto; margin-left: auto">
-	        <tr class="popup_row header_row">
-	            <td class="popup_title" style="width: 150px;padding-left: 10px;">Nome</td>
-	            <td style="width: 280px; ">
-	            	<input class="form_input" type="text" name="nome_step" style="width: 280px" value="<?php if(isset($step)) print utf8_decode($step['descrizione']) ?>"  />
+<body>
+<?php include "../../intranet/{$_SESSION['__mod_area__']}/header.php" ?>
+<?php include "navigation.php" ?>
+<div id="main">
+    <div id="right_col">
+		<?php include "menu.php" ?>
+    </div>
+    <div id="left_col">
+        <form id="my_form" method="post" style="margin-top: 30px; text-align: left; width: 460px; margin-left: auto; margin-right: auto">
+	    <table style="width: 400px; margin-left: auto; margin-right: auto; margin-top: 30px; margin-bottom: 5px">
+	        <tr>
+	            <td style="width: 200px;padding-left: 10px;">Nome</td>
+	            <td style="width: 230px; ">
+	            	<input class="form_input" type="text" name="nome_step" id="nome_step" style="width: 230px" value="<?php if(isset($step)) print $step['descrizione'] ?>"  />
 	            </td>
 	        </tr>
-	        <tr class="popup_row">
-	        	<td class="popup_title" style="width: 150px; padding-left: 10px">Ufficio</td>
-	            <td style="width: 280px">
-	                <select class="form_input" name="ufficio" style="width: 280px; color: #777777;">
-	                <?php
-					while($uf = $res_uffici->fetch_assoc()){
-	                ?>	
-	                <option value="<?php print $uf['id_ufficio'] ?>" <?php if($uf['id_ufficio'] == $step['ufficio']) print "selected='selected'" ?>><?php print $uf['nome'] ?></option>
-	                <?php
-					}
-	                ?>
-	                </select>
-	            </td>
-	        </tr>
-	        <tr class="popup_row header_row">
+	        <tr>
 	            <td colspan="2">
 	            	<input type="hidden" name="action" id="action" />
     				<input type="hidden" name="_i" id="_i" />
 	            </td>
 	        </tr>
+            <tr>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: right; margin-right: 50px; padding-top: 20px">
+                    <a href="#" id="reg" class="material_link">Registra</a>
+                </td>
+            </tr>
 	    </table>
-	    </fieldset>
-	    <div style="width: 450px; text-align: right; margin-top: 20px">
-	    	<a href="#" onclick="go(<?php if(isset($_GET['id']) && $_GET['id'] != 0) print("3, ".$_REQUEST['id']); else print("1, 0"); ?>)" class="nav_link_first">Registra</a>|
-	    	<?php if(isset($_GET['id']) && $_GET['id'] != 0){
-	        ?>
-	        <a href="#" onclick="go(2, <?php print $_REQUEST['id'] ?>)" class="nav_link">Cancella lo step</a>|
-	        <?php
-	        }
-	        ?>
-	        <a href="#" onclick="parent.win.close()" class="nav_link_last">Chiudi</a>
-	    </div>
+        </form>
+        <p class="spacer"></p>
     </div>
-    </form>
+</div>
+<?php include "../../intranet/{$_SESSION['__mod_area__']}/footer.php" ?>
+<div id="drawer" class="drawer" style="display: none; position: absolute">
+    <div style="width: 100%; height: 430px">
+        <div class="drawer_link"><a href="<?php echo $_SESSION['__modules__']['wflow']['path_to_root'] ?>intranet/<?php echo $_SESSION['__mod_area__'] ?>/index.php"><img src="../../images/6.png" style="margin-right: 10px; position: relative; top: 5%" />Home</a></div>
+        <div class="drawer_link"><a href="<?php echo $_SESSION['__modules__']['wflow']['path_to_root'] ?>intranet/<?php echo $_SESSION['__mod_area__'] ?>/profile.php"><img src="../../images/33.png" style="margin-right: 10px; position: relative; top: 5%" />Profilo</a></div>
+		<?php if (!$_SESSION['__user__'] instanceof ParentBean) : ?>
+            <div class="drawer_link"><a href="<?php echo $_SESSION['__modules__']['wflow']['path_to_root'] ?>modules/documents/load_module.php?module=docs&area=<?php echo $_SESSION['__mod_area__'] ?>"><img src="<?php echo $_SESSION['__modules__']['wflow']['path_to_root'] ?>images/11.png" style="margin-right: 10px; position: relative; top: 5%" />Documenti</a></div>
+		<?php endif; ?>
+		<?php if(is_installed("com")){ ?>
+            <div class="drawer_link"><a href="<?php echo $_SESSION['__modules__']['wflow']['path_to_root'] ?>modules/communication/load_module.php?module=com&area=<?php echo $_SESSION['__mod_area__'] ?>"><img src="<?php echo $_SESSION['__modules__']['wflow']['path_to_root'] ?>images/57.png" style="margin-right: 10px; position: relative; top: 5%" />Comunicazioni</a></div>
+		<?php } ?>
+    </div>
+	<?php if (isset($_SESSION['__sudoer__'])): ?>
+        <div class="drawer_lastlink"><a href="<?php echo $_SESSION['__modules__']['wflow']['path_to_root'] ?>admin/sudo_manager.php?action=back"><img src="<?php echo $_SESSION['__modules__']['wflow']['path_to_root'] ?>images/14.png" style="margin-right: 10px; position: relative; top: 5%" />DeSuDo</a></div>
+	<?php endif; ?>
+    <div class="drawer_lastlink"><a href="<?php echo $_SESSION['__modules__']['wflow']['path_to_root'] ?>shared/do_logout.php"><img src="<?php echo $_SESSION['__modules__']['wflow']['path_to_root'] ?>images/51.png" style="margin-right: 10px; position: relative; top: 5%" />Logout</a></div>
+</div>
 </body>
 </html>

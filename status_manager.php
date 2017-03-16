@@ -3,36 +3,43 @@
 include "../../lib/start.php";
 
 check_session();
-check_permission(ADM_PERM);
+check_permission(ADM_PERM|SEG_PERM|DIR_PERM|DSG_PERM);
 
-header("Content-type: text/plain");
+header("Content-type: application/json");
+$response = array("status" => "ok", "message" => "Operazione completata");
 
 $nome = trim($_POST['nome_status']);
 $permessi = 0;
-foreach($_POST['permessi'] as $a)
+foreach($_POST['permessi'] as $a) {
 	$permessi += $a;
+}
 switch($_POST['action']){
 	case 1:     // inserimento
-		$statement = "INSERT INTO w_status (nome, permessi) VALUES ('".$nome."', $permessi)";
-		$msg = "Lo status &egrave; stato inserito correttamente";
+		$statement = "INSERT INTO rb_w_status (nome, permessi) VALUES ('{$nome}', $permessi)";
+		$msg = "Stato inserito correttamente";
 		break;
 	case 2:     // cancellazione
-		$statement = "DELETE FROM w_status WHERE id_status = ".$_POST['_i'];
+		$statement = "DELETE FROM rb_w_status WHERE id_status = ".$_POST['id'];
 		//print $statement;
-		$msg = "Lo status &egrave; stato cancellato correttamente";
+		$msg = "Stato cancellato correttamente";
 		break;
 	case 3:     // modifica
-		$statement = "UPDATE w_status SET nome = '$nome', permessi = $permessi WHERE id_status = ".$_POST['_i'];
+		$statement = "UPDATE rb_w_status SET nome = '$nome', permessi = $permessi WHERE id_status = ".$_POST['id'];
 		//print $statement;
-		$msg = "Lo status &egrave; stato aggiornato correttamente";
+		$msg = "Stato aggiornato correttamente";
 		break;
 }
 try{
 	$recordset = $db->executeUpdate($statement);
 } catch (MySQLException $ex){
-	print "ko|".$ex->getMessage()."|".$ex->getQuery();
+	$response['status'] = "kosql";
+	$response['message'] = "Operazione non completata a causa di un errore";
+	$response['dbg_message'] = $ex->getMessage();
+	$response['query'] = $ex->getQuery();
+	echo json_encode($response);
 	exit;
 }
 
-print "ok";
+$response['message'] = $msg;
+echo json_encode($response);
 exit;

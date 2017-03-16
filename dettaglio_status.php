@@ -3,13 +3,16 @@
 include "../../lib/start.php";
 
 check_session();
-check_permission(ADM_PERM);
+check_permission(ADM_PERM|SEG_PERM|DIR_PERM|DSG_PERM);
 
-$sel_uffici = "SELECT * FROM w_uffici";
+$sel_uffici = "SELECT * FROM rb_w_uffici";
 $res_uffici = $db->executeQuery($sel_uffici);
 
-if(isset($_REQUEST['id'])){
-	$sel = "SELECT id_status, w_status.nome, permessi, w_uffici.nome AS uff, id_ufficio, codice_permessi FROM w_status, w_uffici WHERE permessi&codice_permessi AND id_status =".$_REQUEST['id'];
+if(isset($_REQUEST['id']) && $_REQUEST['id'] != 0){
+	$sel = "SELECT id_status, rb_w_status.nome, permessi, rb_w_uffici.nome AS uff, id_ufficio, codice_permessi 
+			FROM rb_w_status, rb_w_uffici 
+			WHERE permessi&codice_permessi 
+			AND id_status =".$_REQUEST['id'];
 	//print $sel;
 	try{
 		$res = $db->executeQuery($sel);
@@ -25,9 +28,13 @@ if(isset($_REQUEST['id'])){
 		$status = $s['nome'];
 		$id_status = $s['id_status'];
 	}
+	$action = 3;
 }
 else{
 	$_i = 0;
+	$action = 1;
 }
+
+$drawer_label = "Dettaglio stato pratica";
 
 include "dettaglio_status.html.php";

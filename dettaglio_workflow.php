@@ -31,7 +31,8 @@ if(isset($_REQUEST['id']) && ($_REQUEST['id'] != 0)){
 		exit;
 	}
 	$action = 3;
-}else{
+}
+else{
 	$action = 1;
 	$_i = 0;
 }

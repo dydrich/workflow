@@ -59,7 +59,7 @@
                     }
                 }
             });
-        }
+        };
     </script>
 </head>
 <body>
@@ -81,27 +81,30 @@
 	        <tr>
 	            <td style="width: 150px; padding-left: 10px">Step</td>
 	            <td style="width: 30px; ">
-	            	<input class="form_input" type="text" name="num_step" id="num_step" style="width: 30px" value="<?php if(isset($flow)) print $flow['num_step'] ?>" onblur="start()" />
+	            	<input class="form_input" type="text" name="num_step" id="num_step" style="width: 30px" value="<?php if(isset($flow)) print $flow['num_step'] ?>" />
 	            </td>
 	        </tr>
 	        <tr>
 	        	<td style="width: 150px; padding-left: 10px">Permessi</td>
 	            <td style="width: 430px" id="buttonset">
 	                <?php
+                    $_g = null;
+					if(isset($_POST['gruppi'])) {
+						$_g = $_POST['gruppi'];
+					}
+					else if(isset($flow)) {
+						$_g = $flow['gruppi'];
+					}
 	                while($_uf = $res_gruppi->fetch_assoc()){
-	                	if(isset($_POST['gruppi']))
-	                		$_g = $_POST['gruppi'];
-	                	else if(isset($flow))
-	                		$_g = $flow['gruppi'];
 	                    $checked = "";
 	                    if(isset($_REQUEST['id']) && $_REQUEST['id'] != 0){
-	                        if($_uf['permessi']&$_g)
-	                        //if($user['gruppi']&$gr['codice'])
-	                            $checked = "checked";
+	                        if(intval($_uf['permessi'])&$_g) {
+								$checked = "checked";
+							}
 	                    }
 	                ?>
-	                <input type="checkbox" style="margin: auto" value="<?php print $_uf['permessi'] ?>" name="gruppi[]" id="gr_<?php print $_uf['permessi'] ?>" <?php print $checked ?> />
-                    <label for="gr_<?php print $_uf['permessi'] ?>"><?php print $_uf['nome'] ?></label>
+	                <input type="checkbox" style="margin: auto" value="<?php echo $_uf['permessi'] ?>" name="gruppi[]" id="gr_<?php echo $_uf['permessi'] ?>" <?php echo $checked ?> />
+                    <label for="gr_<?php echo $_uf['permessi'] ?>"><?php echo $_uf['nome'] ?></label>
 	                <?php } ?>
 	            </td>
 	        </tr>

@@ -32,7 +32,48 @@
 			<?php
 			}
 			?>
+
+            $('.save_link').on('click', function (event) {
+               _step = $(this).data("step");
+               insert_step(_step);
+            });
         });
+
+        var insert_step = function(step){
+            var url = "workflow_manager.php";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $('#form'+step).serialize(true),
+                dataType: 'json',
+                error: function() {
+                    j_alert("error", "Errore di trasmissione dei dati");
+                },
+                succes: function() {
+
+                },
+                complete: function(data){
+                    r = data.responseText;
+                    if(r == "null"){
+                        return false;
+                    }
+                    var json = $.parseJSON(r);
+                    if (json.status == "kosql"){
+                        sqlalert();
+                        console.log(json.dbg_message);
+                    }
+                    else if(json.status == "ko") {
+                        j_alert("error", "Impossibile completare l'operazione richiesta. Riprovare tra qualche secondo o segnalare l'errore al webmaster");
+                        return;
+                    }
+                    else {
+                        j_alert("alert", json.message);
+                        $('#step'+step).css({backgroundColor: '#EEEEEE'});
+                    }
+                }
+            });
+        };
 
         var flow_detail = function (w_id) {
             document.location.href = 'dettaglio_workflow.php?id='+w_id;
@@ -49,10 +90,12 @@
 	</div>
 	<div id="left_col">
 		<?php
+        $steps = $workflow->getSteps();
 		for ($i = 0; $i < $wflow['num_step']; $i++) {
 			?>
-		<fieldset style="width: 85%; margin: auto">
-			<legend>Step <?php echo $i + 1 ?></legend>
+		<fieldset style="width: 85%; margin: auto" id="step<?php echo $i + 1 ?>">
+            <legend>Step <?php echo $i + 1 ?></legend>
+            <form id="form<?php echo $i + 1 ?>" action="workflow_manager.php" method="post" class="no_border">
 			<table style="width: 75%; margin: auto">
 				<tr>
 					<td style="width: 40%">
@@ -80,7 +123,7 @@
 							$res_steps->data_seek(0);
 							while ($row = $res_steps->fetch_assoc()) {
 								?>
-							<option value="<?php echo $row['id_step'] ?>"><?php echo $row['descrizione'] ?></option>
+							<option value="<?php echo $row['id_step'] ?>" <?php if(isset($steps[$i+1]) && $steps[$i+1]['step_type'] == $row['id_step']) echo "selected"; ?>><?php echo $row['descrizione'] ?></option>
 								<?php
 							}
 							?>
@@ -97,7 +140,7 @@
 							$res_offices->data_seek(0);
 							while ($office = $res_offices->fetch_assoc()) {
 								?>
-								<option value="<?php echo $office['id_ufficio'] ?>"><?php echo $office['nome'] ?></option>
+								<option value="<?php echo $office['id_ufficio'] ?>" <?php if(isset($steps[$i+1]) && $steps[$i+1]['office'] == $office['id_ufficio']) echo "selected"; ?>><?php echo $office['nome'] ?></option>
 								<?php
 							}
 							?>
@@ -114,7 +157,7 @@
 							$res_status->data_seek(0);
 							while ($status = $res_status->fetch_assoc()) {
 								?>
-								<option value="<?php echo $status['id_status'] ?>"><?php echo $status['nome'] ?></option>
+								<option value="<?php echo $status['id_status'] ?>" <?php if(isset($steps[$i+1]) && $steps[$i+1]['status'] == $status['id_status']) echo "selected"; ?>><?php echo $status['nome'] ?></option>
 								<?php
 							}
 							?>
@@ -129,8 +172,12 @@
 							<?php
 							$res_status->data_seek(0);
 							while ($status = $res_status->fetch_assoc()) {
+							    $checked = '';
+							    if (isset($steps[$i+1]) && in_array($status['id_status'], $steps[$i+1]['statuses'])) {
+							        $checked = 'checked';
+                                }
 								?>
-                                <input type="checkbox" name="final_statuses_step<?php echo $i + 1 ?>[]" id="st<?php echo $i + 1 ?>fs_<?php echo $status['id_status'] ?>" value="<?php echo $status['id_status'] ?>" />
+                                <input type="checkbox" name="final_statuses_step<?php echo $i + 1 ?>[]" id="st<?php echo $i + 1 ?>fs_<?php echo $status['id_status'] ?>" value="<?php echo $status['id_status'] ?>" <?php echo $checked; ?> />
                                 <label for="st<?php echo $i + 1 ?>fs_<?php echo $status['id_status'] ?>" style="font-size: 0.8em"><?php echo $status['nome'] ?></label>
 								<?php
 							}
@@ -139,15 +186,17 @@
                 </tr>
 				<tr>
 					<td colspan="2">
-						&nbsp;
+						&nbsp;<input type="hidden" name="action" value="add_step" />
+                        <input type="hidden" name="_i" value="<?php echo $id_workflow ?>" />
 					</td>
 				</tr>
 				<tr>
 					<td colspan="2" class="_right">
-						<a href="#" class="material_link" style="margin-right: 6%">Registra step <?php echo $i + 1 ?></a>
+						<a href="#" class="material_link save_link" data-step="<?php echo $i + 1 ?>" style="margin-right: 6%">Registra step <?php echo $i + 1 ?></a>
 					</td>
 				</tr>
 			</table>
+            </form>
 		</fieldset>
 			<?php
 		}

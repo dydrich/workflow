@@ -34,6 +34,34 @@ else {
 }
 $_SESSION['user_type'] = $user_type;
 
+/*
+ * load data
+ */
+$steps = [];
+$statuses[0] = ['id_status' =>0, 'nome' => 'In attesa'];
+$offices = [];
+$wflows = [];
+$res_steps = $db->executeQuery("SELECT * FROM rb_w_step ORDER BY id_step");
+while ($step = $res_steps->fetch_assoc()) {
+	$steps[$step['id_step']] = $step;
+}
+$res_statuses = $db->executeQuery("SELECT * FROM rb_w_status ORDER BY id_status");
+while ($status = $res_statuses->fetch_assoc()) {
+	$statuses[$status['id_status']] = $status;
+}
+$res_offices = $db->executeQuery("SELECT * FROM rb_w_uffici ORDER BY id_ufficio");
+while ($office = $res_offices->fetch_assoc()) {
+	$offices[$office['id_ufficio']] = $office;
+}
+$res_wflows = $db->executeQuery("SELECT * FROM rb_w_workflow ORDER BY id_workflow");
+while ($wflow = $res_wflows->fetch_assoc()) {
+	$wflows[$wflow['id_workflow']] = $wflow;
+}
+$_SESSION['steps'] = $steps;
+$_SESSION['statuses'] = $statuses;
+$_SESSION['offices'] = $offices;
+$_SESSION['wflows'] = $wflows;
+
 if (isset($_REQUEST['page'])){
 	if ($_REQUEST['page'] == 'admin') {
 		$header = "../../../intranet/{$_SESSION['__mod_area__']}/header.php";
@@ -45,6 +73,9 @@ if (isset($_REQUEST['page'])){
 		$_SESSION['header'] = $header;
 		$_SESSION['footer'] = $footer;
 		header("Location: admin/index.php");
+	}
+	else if ($_REQUEST['page'] == 'front') {
+		header("Location: front/front.php");
 	}
 	else {
 		header("Location: {$_REQUEST['page']}.php");

@@ -8,7 +8,7 @@ check_permission(ADM_PERM|SEG_PERM|DIR_PERM|DSG_PERM);
 header("Content-type: application/json");
 $response = array("status" => "ok", "message" => "Operazione completata");
 
-$nome = trim($_POST['nome_status']);
+$nome = $db->real_escape_string($_POST['nome_status']);
 $permessi = 0;
 foreach($_POST['permessi'] as $a) {
 	$permessi += $a;

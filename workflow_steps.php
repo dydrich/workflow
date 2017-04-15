@@ -6,6 +6,7 @@
  * Time: 6:13 PM
  */
 include "../../lib/start.php";
+require_once "lib/Workflow.php";
 
 check_session();
 check_permission(ADM_PERM|SEG_PERM|DIR_PERM|DSG_PERM);
@@ -15,6 +16,17 @@ $id_workflow = $_REQUEST['id_workflow'];
 $sel_wflow = "SELECT * FROM rb_w_workflow WHERE id_workflow = {$id_workflow}";
 $res_wflow = $db->executeQuery($sel_wflow);
 $wflow = $res_wflow->fetch_assoc();
+
+$sel_gruppi = "SELECT * FROM rb_gruppi WHERE gid BETWEEN 2 AND 5";
+$res_gruppi = $db->executeQuery($sel_gruppi);
+$gruppi = [];
+while ($row = $res_gruppi->fetch_assoc()) {
+	if ($row['permessi']&$wflow['gruppi']) {
+		$gruppi[] = $row['gid'];
+	}
+}
+
+$workflow = new \eschool\Workflow($wflow['id_workflow'], $wflow['richiesta'], array(), $gruppi, new MySQLDataLoader($db));
 
 $sel_wsteps = "SELECT * FROM rb_w_step_workflow WHERE id_workflow = {$id_workflow} ORDER BY ordine";
 $res_wsteps = $db->executeCount($sel_wsteps);

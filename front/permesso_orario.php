@@ -10,7 +10,7 @@ require_once "../../../lib/start.php";
 ini_set('display_errors', 1);
 
 check_session();
-check_permission(DOC_PERM);
+check_permission(DOC_PERM|ATA_PERM|SEG_PERM);
 
 $_SESSION['__path_to_root__'] = "../../../";
 $_SESSION['__path_to_reg_home__'] = "../";

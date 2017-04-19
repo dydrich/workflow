@@ -35,7 +35,7 @@ $sel_perms = "SELECT rb_w_dati_richiesta.id_richiesta, id_workflow, richiedente,
 			  AND id_workflow = workflow 
 			  AND (stato IS NULL OR stato <> 5) 
 			  AND (id_workflow = {$_REQUEST['idw']} OR id_workflow = {$ata_idw})
-			  ORDER BY data1 DESC";
+			  ORDER BY data_ora DESC, data1 DESC";
 $res_perms = $db->executeQuery($sel_perms);
 
 $navigation_label = "registro elettronico ";

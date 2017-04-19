@@ -26,7 +26,7 @@
 		<?php include "menu.php" ?>
     </div>
     <div id="left_col">
-
+    <?php include "admin_widget.php" ?>
    	</div>
     <p class="spacer"></p>
     <p class="spacer"></p>

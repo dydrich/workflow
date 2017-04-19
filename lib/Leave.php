@@ -8,7 +8,7 @@
 
 namespace eschool;
 
-require_once "DailyLeave.php";
+require_once "Request.php";
 
 
 class Leave extends Request
@@ -83,5 +83,19 @@ class Leave extends Request
 	 */
 	public function setNumberOfHours($numberOfHours) {
 		$this->numberOfHours = $numberOfHours;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDay() {
+		return $this->day;
+	}
+
+	/**
+	 * @param mixed $day
+	 */
+	public function setDay($day) {
+		$this->day = $day;
 	}
 }

@@ -72,7 +72,7 @@
                     else {
                         j_alert("alert", json.message);
                         window.setTimeout(function () {
-                            window.document.location = "richieste_permesso.php";
+                            window.document.location = "front.php";
                         }, 2500);
                     }
                 }
@@ -119,13 +119,13 @@
                         <label for="type">Orario</label>
                     </td>
                     <td style="width: 15%">
-                        <label for="enter">Ingresso</label>
+                        <label for="enter">dalle</label>
                     </td>
                     <td style="width: 17%">
                         <input type="text" id="enter" name="enter" value="08:25" style="width: 80%" />
                     </td>
                     <td style="width: 15%">
-                        <label for="exit">Uscita</label>
+                        <label for="exit">alle</label>
                     </td>
                     <td style="width: 17%">
                         <input type="text" id="exit" name="exit" value="13:25" style="width: 80%" />

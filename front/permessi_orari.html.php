@@ -49,7 +49,7 @@
             $.ajax({
                 type: "POST",
                 url: url,
-                data: {idw: 2},
+                data: {idw: <?php echo $_SESSION['wflow_type'] ?>},
                 dataType: 'json',
                 error: function() {
                     j_alert("error", "Errore di trasmissione dei dati");

@@ -5,12 +5,30 @@
  * Date: 4/19/17
  * Time: 6:23 PM
  */
-$sel_open_requests = "SELECT rb_w_richieste.*, data1 FROM rb_w_richieste, rb_w_dati_richiesta 
+if ($_SESSION['wflow_office'] === 1) {
+	$sel_open_requests = "SELECT rb_w_richieste.*, data1 FROM rb_w_richieste, rb_w_dati_richiesta 
 					  WHERE rb_w_richieste.id_richiesta = rb_w_dati_richiesta.id_richiesta 
 					  AND COALESCE(ufficio, 1) = ".$_SESSION['wflow_office']." 
 					  AND (COALESCE(stato, 0) <> 3 AND COALESCE(stato, 0) <> 4 AND COALESCE(stato, 0) <> 5) 
 					  AND data1 >= NOW() 
 					  ORDER BY data1 DESC";
+}
+else if ($_SESSION['wflow_office'] === 2) {
+	// ds
+	$sel_open_requests = "SELECT rb_w_richieste.*, data1 FROM rb_w_richieste, rb_w_dati_richiesta 
+					  WHERE rb_w_richieste.id_richiesta = rb_w_dati_richiesta.id_richiesta 
+					  AND (COALESCE(ufficio, 1) = ".$_SESSION['wflow_office']." OR stato = 8)
+					  AND (COALESCE(stato, 0) <> 3 AND COALESCE(stato, 0) <> 4 AND COALESCE(stato, 0) <> 5) 
+					  AND data1 >= NOW() 
+					  ORDER BY data1 DESC";
+}
+else {
+	$sel_open_requests = "SELECT rb_w_richieste.*, data1 FROM rb_w_richieste, rb_w_dati_richiesta 
+					  WHERE rb_w_richieste.id_richiesta = rb_w_dati_richiesta.id_richiesta 
+					  AND (COALESCE(stato, 0) <> 3 AND COALESCE(stato, 0) <> 4 AND COALESCE(stato, 0) <> 5) 
+					  AND data1 >= NOW() 
+					  ORDER BY data1 DESC";
+}
 $res = $db->executeQuery($sel_open_requests);
 if ($res->num_rows > 0) {
 ?>

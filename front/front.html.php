@@ -108,10 +108,10 @@
 </head>
 <body>
 <?php include "../../../intranet/".$_SESSION['__area__']."/header.php" ?>
-<?php include "../../../intranet/".$_SESSION['__area__']."/navigation.php" ?>
+<?php include "navigation.php" ?>
 <div id="main">
 	<div id="right_col">
-		<?php include $_SESSION['__area__']."_menu.php" ?>
+		<?php include "front_menu.php" ?>
 	</div>
 	<div id="left_col">
         <div style="width: 75%; margin: 25px auto 0 auto">
@@ -148,11 +148,11 @@
 <?php include "../../../intranet/".$_SESSION['__area__']."/footer.php" ?>
 <div id="drawer" class="drawer" style="display: none; position: absolute">
 	<div style="width: 100%; height: 430px">
-		<div class="drawer_link"><a href="../../../intranet/teachers/index.php"><img src="../../../images/6.png" style="margin-right: 10px; position: relative; top: 5%" />Home</a></div>
-		<div class="drawer_link"><a href="../../../intranet/teachers/profile.php"><img src="../../../images/33.png" style="margin-right: 10px; position: relative; top: 5%" />Profilo</a></div>
-		<div class="drawer_link"><a href="../../modules/documents/load_module.php?module=docs&area=teachers"><img src="../../../images/11.png" style="margin-right: 10px; position: relative; top: 5%" />Documenti</a></div>
+		<div class="drawer_link"><a href="../../../intranet/<?php echo $_SESSION['__mod_area__'] ?>/index.php"><img src="../../../images/6.png" style="margin-right: 10px; position: relative; top: 5%" />Home</a></div>
+		<div class="drawer_link"><a href="../../../intranet/<?php echo $_SESSION['__mod_area__'] ?>/profile.php"><img src="../../../images/33.png" style="margin-right: 10px; position: relative; top: 5%" />Profilo</a></div>
+		<div class="drawer_link"><a href="../../modules/documents/load_module.php?module=docs&area=<?php echo $_SESSION['__mod_area__'] ?>"><img src="../../../images/11.png" style="margin-right: 10px; position: relative; top: 5%" />Documenti</a></div>
 		<?php if(is_installed("com")){ ?>
-			<div class="drawer_link"><a href="<?php echo $_SESSION['__path_to_root__'] ?>modules/communication/load_module.php?module=com&area=teachers"><img src="../../../images/57.png" style="margin-right: 10px; position: relative; top: 5%" />Comunicazioni</a></div>
+			<div class="drawer_link"><a href="<?php echo $_SESSION['__path_to_root__'] ?>modules/communication/load_module.php?module=com&area=<?php echo $_SESSION['__mod_area__'] ?>"><img src="../../../images/57.png" style="margin-right: 10px; position: relative; top: 5%" />Comunicazioni</a></div>
 		<?php } ?>
 		<?php if ($_SESSION['__user__']->hasConnectedAccounts()) {
 			$acc = $_SESSION['__user__']->getConnectedAccounts();

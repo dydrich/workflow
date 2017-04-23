@@ -11,7 +11,7 @@ require_once "../lib/define.php";
 ini_set('display_errors', 1);
 
 check_session();
-check_permission(DOC_PERM|ATA_PERM);
+check_permission(DOC_PERM|ATA_PERM|SEG_PERM|DSG_PERM);
 
 $_SESSION['__path_to_root__'] = "../../../";
 $_SESSION['__path_to_reg_home__'] = "../";
@@ -19,9 +19,9 @@ $_SESSION['__path_to_reg_home__'] = "../";
 $user = $_SESSION['__user__']->getUid();
 
 $id_workflow = DAILY_LEAVE_TEACHER;
-if ($_SESSION['__area__'] == 'ata') {
-	$id_workflow = DAILY_LEAVE_ATA;
-}
+//if ($_SESSION['__area__'] == 'ata') {
+//	$id_workflow = DAILY_LEAVE_ATA;
+//}
 $_SESSION['wflow_type'] = $id_workflow;
 
 $sel_perms = "SELECT rb_w_richieste.id_richiesta, richiedente, COALESCE(rb_w_richieste.protocollo, 'non presente') AS protocollo, operatore, data_ora, codice_pratica, COALESCE(stato, 0) AS stato, COALESCE(ufficio, 1) AS ufficio, richiesta, motivo, DATE(data1) AS data1 

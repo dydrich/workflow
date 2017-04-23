@@ -10,7 +10,7 @@ require_once "../lib/DailyLeave.php";
 require_once "../lib/Leave.php";
 
 check_session();
-check_permission(DOC_PERM|ATA_PERM);
+check_permission(DOC_PERM|ATA_PERM|SEG_PERM|DSG_PERM);
 
 header("Content-type: application/json");
 $response = array("status" => "ok", "message" => "Operazione completata");

@@ -52,6 +52,12 @@
                 event.preventDefault();
                 del_req();
             });
+
+            $('.chg_area').on('click', function (event) {
+                event.preventDefault();
+                area = $(this).data('area');
+                document.location.href = "richieste.php?idw=<?php echo $_REQUEST['idw'] ?>&area="+area;
+            })
         });
 
         var choose_closing_val = function(idw) {
@@ -112,7 +118,7 @@
                     else {
                         j_alert("alert", json.message);
                         window.setTimeout(function () {
-                            window.document.location = "richieste.php?idw=<?php echo $_GET['idw'] ?>";
+                            location.reload(true);
                         }, 2500);
                     }
                 }
@@ -149,7 +155,7 @@
                     else {
                         j_alert("alert", json.message);
                         window.setTimeout(function () {
-                            window.document.location = "richieste.php?idw=<?php echo $_GET['idw'] ?>";
+                            location.reload(true);
                         }, 2500);
                     }
                 }
@@ -186,7 +192,7 @@
                     else {
                         j_alert("alert", json.message);
                         window.setTimeout(function () {
-                            window.document.location = "richieste.php?idw=<?php echo $_GET['idw'] ?>";
+                            location.reload(true);
                         }, 2500);
                     }
                 }
@@ -236,6 +242,17 @@
 		<?php include "menu.php" ?>
 	</div>
 	<div id="left_col">
+        <div class="mdtabs">
+            <div class="mdtab<?php if (!isset($_GET['area']) || (isset($_GET['area']) && $_GET['area'] == 'all')) echo " mdselected_tab" ?>">
+                <a href="#" class="chg_area" data-area="all"><span>Tutti</span></a>
+            </div>
+            <div class="mdtab<?php if (isset($_GET['area']) && $_GET['area'] == 'teachers') echo " mdselected_tab" ?>">
+                <a href="#" class="chg_area" data-area="teachers"><span>Docenti</span></a>
+            </div>
+            <div class="mdtab<?php if (isset($_GET['area']) && $_GET['area'] == 'ata') echo " mdselected_tab" ?>">
+                <a href="#" class="chg_area" data-area="ata"><span>ATA</span></a>
+            </div>
+        </div>
 		<?php
 		if($res_perms->num_rows < 1){
 			?>
@@ -280,7 +297,7 @@
 					?>
 					<div class="card" id="row<?php echo $row['id_richiesta'] ?>">
 						<div class="card_title">
-							<?php echo $user ?> (<?php if($row['id_workflow'] < 3) echo "docente"; else echo "ata" ?>) - <?php echo $giorno_str ?>
+							<?php echo $user ?> (<?php if($row['area'] == 'teachers') echo "docente"; else echo "ata" ?>) - <?php echo $giorno_str ?>
 							<div style="float: right; margin-right: 20px; color: #1E4389">
 								<a href="#" class="normal del_link" data-id="<?php echo $row['id_richiesta'] ?>">
 									<i class="fa fa-trash "></i>

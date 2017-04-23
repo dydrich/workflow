@@ -11,6 +11,7 @@
     </ul>
 	<p class="menu_label schedule_icon">Amministrazione</p>
 	<ul class="menublock" style="" dir="rtl">
+        <li><a href="index.php" style="text-decoration: none">Home</a></li>
 		<li><a href="offices.php" style="text-decoration: none">Uffici</a></li>
 		<li><a href="workflow.php" style="text-decoration: none">Workflow</a></li>
 		<li><a href="step.php" style="text-decoration: none">Step</a></li>

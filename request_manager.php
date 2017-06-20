@@ -6,7 +6,7 @@
  * Time: 1:03 PM
  */
 require_once "../../lib/start.php";
-require_once "lib/AdimistrativeRequest.php";
+require_once "lib/AdministrativeRequest.php";
 require_once "lib/DailyPermitAdministrativeRequest.php";
 require_once "lib/LeaveAdministrativeRequest.php";
 

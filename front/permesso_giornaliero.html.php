@@ -22,7 +22,19 @@
                 save_data();
             });
 
-            $('#data').datepicker({
+            $('#date_from').datepicker({
+                dateFormat: "dd/mm/yy",
+                onSelect: function(tx, dp) {
+                    if($('#number').val() === '1') {
+                        $('#date_to').val(tx);
+                    }
+                    else {
+                        $('#date_to').val('');
+                    }
+                }
+            });
+
+            $('#date_to').datepicker({
                 dateFormat: "dd/mm/yy"
             });
 
@@ -30,15 +42,31 @@
                event.preventDefault();
                save_data();
             });
+
+            $('#type').on('change', function (event) {
+               item_selected = $('#type').val();
+               if (item_selected == 4) {
+                   $('#reason_row').show();
+                   $('#note').focus();
+               }
+               else {
+                   $('#reason_row').hide();
+               }
+            });
         });
 
         var save_data = function(){
             var url = "request_manager.php";
+            if (!check_form_data()) {
+                j_alert("error", "Tutti i campi sono obbligatori");
+                return false;
+            }
+
             $.ajax({
                 type: "POST",
                 url: url,
                 dataType: 'json',
-                data: {action: 'save_data', idr: <?php echo $_GET['idr'] ?>, code: $('#code').text(), reason: $('#type').val(), date: $('#data').val(), req_type: <?php echo $request['workflow'] ?>},
+                data: {action: 'save_data', idr: <?php echo $_GET['idr'] ?>, code: $('#code').text(), reason: $('#type').val(), date_from: $('#date_from').val(), date_to: $('#date_to').val(), req_type: <?php echo $request['workflow'] ?>, note: $('#note').val(), number_of_days: $('#number').val()},
                 error: function() {
                     j_alert("error", "Errore di trasmissione dei dati");
                 },
@@ -68,6 +96,14 @@
                 }
             });
         };
+
+        var check_form_data;
+        check_form_data = function () {
+            if (($('#data_from').val() === '') || ($('#type').val() == '4' && !($.trim($('#note').val()))) || ($('#type').val() == '0') || ($('#number').val() === '')) {
+                return false;
+            }
+            return true;
+        };
 	</script>
     <style>
         td {height: 25px}
@@ -93,10 +129,35 @@
                 </tr>
                 <tr>
                     <td style="width: 35%">
-                        <label for="data">Data permesso</label>
+                        <label for="number">Numero di giorni richiesti</label>
                     </td>
                     <td style="width: 65%">
-						<input type="text" id="data" name="data" style="width: 95%" value="<?php if($req_data != null) echo format_date($req_data['data1'], SQL_DATE_STYLE, IT_DATE_STYLE, "/"); ?>" />
+                        <select id="number" name="number" style="width: 95%">
+                            <option value="1">1</option>
+							<?php
+							for ($x = 2; $x < 7; $x++) {
+								?>
+                                <option value="<?php echo $x ?>" <?php if($req_data != null && $req_data['intero2'] == $x) echo 'selected' ; ?>><?php echo $x ?></option>
+								<?php
+							}
+							?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 35%">
+                        <label for="date_from">Dal giorno</label>
+                    </td>
+                    <td style="width: 65%">
+						<input type="text" id="date_from" name="date_from" style="width: 95%" value="<?php if($req_data != null) echo format_date($req_data['data1'], SQL_DATE_STYLE, IT_DATE_STYLE, "/"); ?>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 35%">
+                        <label for="date_to">Al giorno</label>
+                    </td>
+                    <td style="width: 65%">
+                        <input type="text" id="date_to" name="date_to" style="width: 95%" value="<?php if($req_data != null) echo format_date($req_data['data2'], SQL_DATE_STYLE, IT_DATE_STYLE, "/"); ?>" />
                     </td>
                 </tr>
                 <tr>
@@ -114,6 +175,14 @@
 							}
                             ?>
                         </select>
+                    </td>
+                </tr>
+                <tr id="reason_row" style="display: none">
+                    <td style="width: 35%">
+                        <label for="type">Note</label>
+                    </td>
+                    <td style="width: 65%">
+                        <textarea id="note" name="note" style="width: 95%; height: 45px" placeholder="Indicare il motivo della richiesta"></textarea>
                     </td>
                 </tr>
                 <tr>

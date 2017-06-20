@@ -11,7 +11,7 @@ namespace eschool;
 require_once "Request.php";
 require_once "Workflow.php";
 
-abstract class AdimistrativeRequest extends Request
+abstract class AdministrativeRequest extends Request
 {
 	protected $workflow;
 	protected $steps;

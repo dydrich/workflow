@@ -27,12 +27,13 @@ if(isset($_REQUEST['area']) && $_REQUEST['area'] != "all") {
 
 $user = $_SESSION['__user__']->getUid();
 
-$sel_perms = "SELECT rb_w_dati_richiesta.id_richiesta, id_workflow, richiedente, area, COALESCE(rb_w_richieste.protocollo, 'non presente') AS protocollo, operatore, data_ora, codice_pratica, COALESCE(stato, 0) AS stato, ufficio, richiesta, motivo, DATE(data1) AS data1
+$sel_perms = "SELECT rb_w_dati_richiesta.id_richiesta, id_workflow, richiedente, area, COALESCE(rb_w_richieste.protocollo, 'non presente') AS protocollo, operatore, data_ora, codice_pratica, COALESCE(stato, 0) AS stato, ufficio, richiesta, motivo, DATE(data1) AS data1, DATE(COALESCE(data2, data1)) AS data2, testo1, intero1, COALESCE(intero2, 1) AS intero2
 			  FROM rb_w_richieste, rb_w_workflow, rb_w_motivi_permesso, rb_w_dati_richiesta 
 			  WHERE rb_w_richieste.id_richiesta = rb_w_dati_richiesta.id_richiesta 
 			  AND intero1 = id 
 			  AND id_workflow = workflow 
 			  AND (stato IS NULL OR stato <> 5) 
+			  AND data1 >= NOW()
 			  AND id_workflow = {$_REQUEST['idw']} 
 			  $req_area
 			  ORDER BY data_ora DESC, data1 DESC";

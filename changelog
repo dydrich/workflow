@@ -1,3 +1,13 @@
+1.1.2
+widget di segnalazione urgenze (issue #9)
+
+1.1
+apertura front a manager
+unificazione gestione permessi per ata e docenti
+migliorie grafiche
+revisione header, navigation e footer
+bug fix
+
 1.0
 primo rilascio ufficiale. Features:
 - richiesta permessi giornalieri e orari docente

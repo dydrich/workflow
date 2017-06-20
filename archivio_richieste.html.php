@@ -16,6 +16,12 @@
         $(function(){
             load_jalert();
             setOverlayEvent();
+
+            $('a.print_link').click(function(event){
+                event.preventDefault();
+                req_to_print = $(this).data('id');
+                document.location.href="stampa_richiesta.php?req="+req_to_print+"&wtype=<?php echo $_REQUEST['idw'] ?>";
+            });
         });
 	</script>
 </head>
@@ -72,6 +78,11 @@
 					<div class="card" id="row<?php echo $row['id_richiesta'] ?>">
 						<div class="card_title">
 							<?php echo $user ?> (<?php if($row['id_workflow'] < 3) echo "docente"; else echo "ata" ?>) - <?php echo $giorno_str ?>
+                            <div style="float: right; margin-right: 20px; color: #1E4389">
+                                <a href="#" class="normal print_link" data-id="<?php echo $row['id_richiesta'] ?>" title="Genera la ricevuta in PDF">
+                                    <i class="fa fa-print "></i>
+                                </a>
+                            </div>
 						</div>
 						<div class="card_varcontent">
 							Protocollo: <strong><?php echo $row['protocollo'] ?></strong>

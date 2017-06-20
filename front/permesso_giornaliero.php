@@ -22,7 +22,7 @@ $res = $db->executeQuery($sel);
 $request = $res->fetch_assoc();
 
 $req_data = null;
-$sel_data = "SELECT intero1, DATE(data1) AS data1 FROM rb_w_dati_richiesta WHERE id_richiesta = ".$request['id_richiesta'];
+$sel_data = "SELECT intero1, COALESCE(intero2, 1) AS intero2, DATE(data1) AS data1, DATE(COALESCE(data2, data1)) AS data2 FROM rb_w_dati_richiesta WHERE id_richiesta = ".$request['id_richiesta'];
 $res_data = $db->executeQuery($sel_data);
 if ($res_data->num_rows > 0) {
 	$req_data = $res_data->fetch_assoc();

@@ -37,6 +37,12 @@
                 //del_user(strs[1]);
             });
 
+            $('a.print_link').click(function(event){
+                event.preventDefault();
+                req_to_print = $(this).data('id');
+                document.location.href="stampa_richiesta.php?req="+req_to_print+"&wtype=<?php echo $_REQUEST['idw'] ?>";
+            });
+
             $('.closing').on('click', function (event) {
                idreq = $(this).data('id');
                _status = $(this).data('status');
@@ -107,13 +113,13 @@
                         return false;
                     }
                     var json = $.parseJSON(r);
-                    if (json.status == "kosql"){
+                    if (json.status === "kosql"){
                         sqlalert();
                         console.log(json.dbg_message);
                     }
-                    else if(json.status == "ko") {
+                    else if(json.status === "ko") {
                         j_alert("error", "Impossibile completare l'operazione richiesta. Riprovare tra qualche secondo o segnalare l'errore al webmaster");
-                        return;
+                        return false;
                     }
                     else {
                         j_alert("alert", json.message);
@@ -140,17 +146,17 @@
                 },
                 complete: function(data){
                     r = data.responseText;
-                    if(r == "null"){
+                    if(r === "null"){
                         return false;
                     }
                     var json = $.parseJSON(r);
-                    if (json.status == "kosql"){
+                    if (json.status === "kosql"){
                         sqlalert();
                         console.log(json.dbg_message);
                     }
-                    else if(json.status == "ko") {
+                    else if(json.status === "ko") {
                         j_alert("error", "Impossibile completare l'operazione richiesta. Riprovare tra qualche secondo o segnalare l'errore al webmaster");
-                        return;
+                        return false;
                     }
                     else {
                         j_alert("alert", json.message);
@@ -181,13 +187,13 @@
                         return false;
                     }
                     var json = $.parseJSON(r);
-                    if (json.status == "kosql"){
+                    if (json.status === "kosql"){
                         sqlalert();
                         console.log(json.dbg_message);
                     }
-                    else if(json.status == "ko") {
+                    else if(json.status === "ko") {
                         j_alert("error", "Impossibile completare l'operazione richiesta. Riprovare tra qualche secondo o segnalare l'errore al webmaster");
-                        return;
+                        return false;
                     }
                     else {
                         j_alert("alert", json.message);
@@ -287,7 +293,9 @@
                     }
 
 					setlocale(LC_TIME, 'it_IT.utf8');
-					$giorno_str = strftime("%A %d %B %Y", strtotime($row['data1']));
+					$starting_day = strftime("%A %d %B %Y", strtotime($row['data1']));
+					$ending_day = strftime("%A %d %B %Y", strtotime($row['data2']));
+					$number_of_days = $row['intero2'];
 
                     $user = $db->executeCount("SELECT CONCAT_WS(' ', cognome, nome) FROM rb_utenti WHERE uid = {$row['richiedente']}");
 					$step_req = $db->executeQuery("SELECT * FROM rb_w_step_richieste WHERE id_richiesta = {$row['id_richiesta']} ORDER BY step DESC");
@@ -297,19 +305,30 @@
 					?>
 					<div class="card" id="row<?php echo $row['id_richiesta'] ?>">
 						<div class="card_title">
-							<?php echo $user ?> (<?php if($row['area'] == 'teachers') echo "docente"; else echo "ata" ?>) - <?php echo $giorno_str ?>
+							<?php echo $user ?> (<?php if($row['area'] == 'teachers') echo "docente"; else echo "ata" ?>) - <?php if ($number_of_days == 1) echo $starting_day; else echo $number_of_days.' giorni richiesti' ?>
 							<div style="float: right; margin-right: 20px; color: #1E4389">
-								<a href="#" class="normal del_link" data-id="<?php echo $row['id_richiesta'] ?>">
+                                <a href="#" class="normal print_link" data-id="<?php echo $row['id_richiesta'] ?>" style="margin-right: 0" title="Genera la ricevuta in PDF">
+                                    <i class="fa fa-print "></i>
+                                </a>
+								<!--<a href="#" class="normal del_link" data-id="<?php echo $row['id_richiesta'] ?>" title="Elimina la richiesta">
 									<i class="fa fa-trash "></i>
-								</a>
+								</a>-->
 							</div>
 						</div>
 						<div class="card_varcontent">
                             Protocollo: <strong><?php echo $row['protocollo'] ?></strong>
                             <div style="float: right; margin-right: 20px">Codice pratica: <?php echo $row['codice_pratica'] ?></div>
+                            <?php if ($number_of_days > 1): ?>
+                            <div style="margin-top: 5px; margin-bottom: 5px">Giorni richiesti: <strong><?php echo $number_of_days ?>, da <?php echo $starting_day ?> a <?php echo $ending_day ?></strong></div>
+                            <?php endif; ?>
 							<?php if($_REQUEST['idw'] == 1 || $_REQUEST['idw'] == 3): ?>
 							<div style="margin-top: 5px; margin-bottom: 5px">Motivo: <span class="_bold"><?php echo $row['motivo'] ?></span></div>
                             <?php endif; ?>
+                            <?php if ($row['intero1'] == 4): ?>
+                                <div style="margin-top: 5px; margin-bottom: 5px;">
+                                    Note: <span class="_bold"><?php echo $row['testo1'] ?></span>
+                                </div>
+							<?php endif; ?>
 							<?php if($_REQUEST['idw'] == 2 || $_REQUEST['idw'] == 4){
 								$leave = new \eschool\Leave($row['id_richiesta'], $row['codice_pratica'], $row['id_workflow'], new MySQLDataLoader($db));
 								?>

@@ -26,8 +26,14 @@
                event.preventDefault();
                idr = $(this).data('id');
                status = $(this).data('status');
+               req_status = $(this).data('req_status');
                if (status === 'open') {
-                   document.location.href = "permesso_giornaliero.php?idr="+idr;
+                   if (req_status == 1 || req_status == 0) {
+                       document.location.href = "permesso_giornaliero.php?idr="+idr;
+                   }
+                   else {
+                       j_alert("error", "Modifica non permessa");
+                   }
                }
             });
 
@@ -140,11 +146,13 @@
 			        $state = "closed";
                 }
                 setlocale(LC_TIME, 'it_IT.utf8');
-				$giorno_str = strftime("%A %d %B %Y", strtotime($row['data1']));
+				$starting_day = strftime("%A %d %B %Y", strtotime($row['data1']));
+				$ending_day = strftime("%A %d %B %Y", strtotime($row['data2']));
+				$number_of_days = $row['intero2'];
 				?>
 				<div class="card" id="row<?php echo $row['id_richiesta'] ?>" style="<?php if($state === 'closed') echo "background-color: #EEEEEE"; ?>">
 					<div class="card_title">
-                        <a href="#" class="upd_req" data-id="<?php echo $row['id_richiesta'] ?>" data-status="<?php echo $state ?>">
+                        <a href="#" class="upd_req" data-id="<?php echo $row['id_richiesta'] ?>" data-req_status="<?php echo $row['stato'] ?>" data-status="<?php echo $state ?>">
                             Richiesta del <?php echo format_date(substr($row['data_ora'], 0, 10), SQL_DATE_STYLE, IT_DATE_STYLE, "/") ?> - Prot.: <?php echo $row['protocollo'] ?>
                         </a>
                         <?php if($state == 'open'): ?>
@@ -156,7 +164,11 @@
                     <?php endif; ?>
 					</div>
 					<div class="card_varcontent">
-						Giorno richiesto: <strong><?php echo $giorno_str ?></strong>
+                        <?php if ($number_of_days == 1): ?>
+						Giorno richiesto: <strong><?php echo $starting_day ?></strong>
+                        <?php else : ?>
+                            Giorni richiesti: <strong><?php echo $number_of_days ?>, da <?php echo $starting_day ?> a <?php echo $ending_day ?></strong>
+                        <?php endif; ?>
                         <div style="float: right; margin-right: 20px; color: #1E4389">
                             Stato: <span class="_bold"><?php echo strtoupper($_SESSION['statuses'][$row['stato']]['nome']) ?></span>
                         </div>

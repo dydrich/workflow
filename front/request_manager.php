@@ -17,9 +17,19 @@ $response = array("status" => "ok", "message" => "Operazione completata");
 
 switch ($_POST['action']) {
 	case 'save_data':
+		$note = false;
+		if (isset($_POST['note'])) {
+			$note = $db->real_escape_string($_POST['note']);
+		}
 		$req = new \eschool\DailyLeave($_POST['idr'], $_POST['code'], $_POST['req_type'], new MySQLDataLoader($db));
-		$req->setReason($_POST['reason']);
-		$req->setDay(format_date($_POST['date'], IT_DATE_STYLE, SQL_DATE_STYLE, "-"));
+		$reason = ['id' => $_POST['reason'], 'desc' => ''];
+		if ($note) {
+			$reason['note'] = $note;
+		}
+		$req->setReason($reason);
+		$req->setDay(format_date($_POST['date_from'], IT_DATE_STYLE, SQL_DATE_STYLE, "-"));
+		$req->setEndDay(format_date($_POST['date_to'], IT_DATE_STYLE, SQL_DATE_STYLE, "-"));
+		$req->setNumberOfDays($_POST['number_of_days']);
 		$req->saveData();
 		break;
 	case 'del_request':

@@ -33,7 +33,7 @@ $sel_perms = "SELECT rb_w_dati_richiesta.id_richiesta, id_workflow, richiedente,
 			  WHERE rb_w_richieste.id_richiesta = rb_w_dati_richiesta.id_richiesta 
 			  AND intero1 = id 
 			  AND id_workflow = workflow 
-			  AND stato = 5 
+			  AND data1 < NOW()
 			  AND (id_workflow = {$_REQUEST['idw']} OR id_workflow = {$ata_idw})
 			  ORDER BY data1 DESC";
 $res_perms = $db->executeQuery($sel_perms);

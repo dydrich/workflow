@@ -24,7 +24,7 @@ $id_workflow = DAILY_LEAVE_TEACHER;
 //}
 $_SESSION['wflow_type'] = $id_workflow;
 
-$sel_perms = "SELECT rb_w_richieste.id_richiesta, richiedente, COALESCE(rb_w_richieste.protocollo, 'non presente') AS protocollo, operatore, data_ora, codice_pratica, COALESCE(stato, 0) AS stato, COALESCE(ufficio, 1) AS ufficio, richiesta, motivo, DATE(data1) AS data1 
+$sel_perms = "SELECT rb_w_richieste.id_richiesta, richiedente, COALESCE(rb_w_richieste.protocollo, 'non presente') AS protocollo, operatore, data_ora, codice_pratica, COALESCE(stato, 0) AS stato, COALESCE(ufficio, 1) AS ufficio, richiesta, motivo, DATE(data1) AS data1, DATE(COALESCE(data2, data1)) AS data2, COALESCE(intero2, 1) AS intero2
 			  FROM rb_w_richieste, rb_w_workflow, rb_w_motivi_permesso, rb_w_dati_richiesta 
 			  WHERE id_workflow = {$id_workflow}
 			  AND richiedente = {$user} 
